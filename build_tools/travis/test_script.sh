@@ -17,7 +17,7 @@ run_tests() {
 if [[ "$RUN_LINT" == "true" ]]; then
     echo "Running linter and mypy"
     pylint kglm
-    mypy kglm
+    mypy kglm --ignore-missing-imports
 fi
 
 if [[ "$SKIP_TESTS" != "true" ]]; then
