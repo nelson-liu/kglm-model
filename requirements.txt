@@ -1,4 +1,4 @@
-allennlp==0.8.1
+git+git://github.com/rloganiv/allennlp.git@pytorch-grad-clip
 
 # Linting
 # Checks style, syntax, and other useful errors.
