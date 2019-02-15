@@ -177,6 +177,10 @@ class EnhancedWikitextKglmReader(DatasetReader):
             reverse_shortlist = {DEFAULT_PADDING_TOKEN: 0}
 
             entity_ids = [DEFAULT_PADDING_TOKEN] * len(target)
+
+            parent_ids = []
+            relations = []
+            has_parent_mask = []
             shortlist_inds = np.zeros(shape=(len(target,)))
             alias_copy_inds = np.zeros(shape=(len(target),))
 
@@ -192,6 +196,12 @@ class EnhancedWikitextKglmReader(DatasetReader):
                     reverse_shortlist[entity_id] = len(reverse_shortlist)
                     shortlist.append(entity_id)
                 shortlist_ind = reverse_shortlist[entity_id]
+
+                # Collect the relations and their parents
+                relations.extend(annotation["relation"])
+                parent_ids.extend(annotation["parent_id"])
+                has_parent_mask.extend([0 if relation == "@@NEW@@" else 1 for
+                                        relation in annotation["relation"]])
 
                 # Update the outputs
                 for i in range(*annotation['span']):
@@ -212,6 +222,15 @@ class EnhancedWikitextKglmReader(DatasetReader):
                 token_indexers=self._entity_indexers)
             fields['shortlist_inds'] = SequentialArrayField(
                 shortlist_inds,
+                dtype=np.int64)
+            fields['parent_ids'] = TextField(
+                [Token(x) for x in parent_ids],
+                token_indexers=self._entity_indexers)
+            fields['relations'] = TextField(
+                [Token(x) for x in relations],
+                token_indexers=self._entity_indexers)
+            fields['has_parent_mask'] = SequentialArrayField(
+                np.array(has_parent_mask, dtype=np.int64),
                 dtype=np.int64)
             # meta_fields['entity_ids'] = entity_ids
 
