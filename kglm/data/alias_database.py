@@ -57,12 +57,12 @@ class AliasDatabase:
             tokenized_aliases = tokenized_aliases[:MAX_ALIASES]
             token_lookup[entity] = tokenized_aliases
 
-            # Next obtain the set of unqiue tokens appearing in aliases for this entity. Use this
-            # to build a map from tokens to their unique id.
-            unique_tokens = set()
+            # Next, build a map from tokens to their unique id.
+            id_map = {}
             for tokenized_alias in tokenized_aliases:
-                unique_tokens.update(tokenized_alias)
-            id_map = {token: i + 1 for i, token in enumerate(unique_tokens)}
+                for token in tokenized_alias:
+                    if token not in id_map:
+                        id_map[token] = len(id_map) + 1
             id_map_lookup[entity] = id_map
 
             # Lastly create an array associating the tokens in the alias to their corresponding ids.
